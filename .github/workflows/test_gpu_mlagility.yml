@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: dan-selfhost-fun
+    runs-on: self-hosted
     env:
       MLAGILITY_DEBUG: True
       MLAGILITY_TRACEBACK: True
