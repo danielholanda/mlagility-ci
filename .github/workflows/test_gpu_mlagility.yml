@@ -31,6 +31,8 @@ jobs:
       - name: Install Docker
         shell: bash -el {0}
         run: |
+          echo "STEP 0"
+          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 7EA0A9C3F273FCD8
           echo "STEP 1"
           sudo apt-get update
           echo "STEP 2"
