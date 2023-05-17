@@ -13,8 +13,24 @@ permissions:
   contents: read
 
 jobs:
+  start_vm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install az cli
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y azure-cli
+      - name: Turn on Azure VM
+        run: |
+          az login --username ${{ secrets.AZURE_CLIENT_ID }} --password ${{ secrets.AZURE_CLIENT_PWD }}
+          az vm start --name morecuda --resource-group morecuda_group
+          az vm wait --created --name morecuda --resource-group morecuda_group
+          az vm run-command invoke --name morecuda --resource-group morecuda_group --command-id RunShellScript --scripts 'export RUNNER_ALLOW_RUNASROOT="1" && export HOME="/home/azureuser" && bash /home/azureuser/actions-runner/run.sh &'
   build_and_test:
+    needs: start_vm
     timeout-minutes: 10
+    if: ${{ needs.start_vm.result == 'success' }}
     runs-on: self-hosted
     env:
       MLAGILITY_DEBUG: True
