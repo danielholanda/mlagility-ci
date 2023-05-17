@@ -324,7 +324,7 @@ class Testing(unittest.TestCase):
         with patch.object(sys, "argv", testargs):
             benchitcli()
 
-        assert_success_of_builds([test_scripts[0], cache_dir, test_scripts[1]])
+        assert_success_of_builds([test_scripts[0], test_scripts[1]], cache_dir)
 
     def test_003_cli_build_dir(self):
         # NOTE: this is not a unit test, it relies on other command
