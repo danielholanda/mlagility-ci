@@ -72,7 +72,7 @@ jobs:
           # E2E tests
           rm -rf ~/.cache/mlagility
           python test/gpu.py
-  stop_vm:
+  deallocate_vm:
     needs: build_and_test
     runs-on: ubuntu-latest
     steps:
@@ -81,7 +81,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y azure-cli
-      - name: Turn off Azure VM
+      - name: Deallocate Azure VM
         run: |
           az login --username ${{ secrets.AZURE_CLIENT_ID }} --password ${{ secrets.AZURE_CLIENT_PWD }}
-          az vm stop --name morecuda --resource-group morecuda_group
+          az vm deallocate --name morecuda --resource-group morecuda_group
