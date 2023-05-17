@@ -20,6 +20,7 @@ from mlagility.cli.cli import main as benchitcli
 import mlagility.cli.report as report
 from mlagility.common import filesystem
 import mlagility.api.ortmodel as ortmodel
+import mlagility.api.trtmodel as trtmodel
 import onnxflow.common.build as build
 import onnxflow.common.cache as cache
 import onnxflow.common.exceptions as exceptions
@@ -228,6 +229,7 @@ def assert_success_of_builds(
     info_property: Tuple[str, Any] = None,
     check_perf: bool = False,
     check_opset: int = None,
+    runtime: str = "ort",
 ) -> int:
     # Figure out the build name by surveying the build cache
     # for a build that includes test_script_name in the name
@@ -254,12 +256,22 @@ def assert_success_of_builds(
                     ), f"{build_state.info.__dict__[info_property[0]]} == {info_property[1]}"
 
                 if check_perf:
-                    cpu_model = ortmodel.ORTModel(
-                        build_name=build_state.config.build_name,
-                        cache_dir=build_state.cache_dir,
-                    )
-                    assert cpu_model.mean_latency > 0
-                    assert cpu_model.throughput > 0
+                    if runtime == "ort":
+                        model_perf = ortmodel.ORTModel(
+                            build_name=build_state.config.build_name,
+                            cache_dir=build_state.cache_dir,
+                        )
+                    elif runtime == "trt":
+                        model_perf = trtmodel.TRTModel(
+                            build_name=build_state.config.build_name,
+                            cache_dir=build_state.cache_dir,
+                        )
+                    else:
+                        assert (
+                            False
+                        ), f"Runtime {runtime} has not been implemented as part of this function"
+                assert model_perf.mean_latency > 0
+                assert model_perf.throughput > 0
 
                 if check_opset:
                     onnx_model = onnx.load(build_state.converted_onnx_file)
