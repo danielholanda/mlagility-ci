@@ -33,6 +33,8 @@ jobs:
         run: |
           echo "STEP 0"
           sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 7EA0A9C3F273FCD8
+          echo "STEP 0.5"
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
           echo "STEP 1"
           sudo apt-get update
           echo "STEP 2"
