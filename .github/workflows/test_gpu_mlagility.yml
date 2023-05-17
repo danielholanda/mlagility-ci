@@ -13,22 +13,8 @@ permissions:
   contents: read
 
 jobs:
-  start_vm:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install az cli
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y azure-cli
-      - name: Turn on Azure VM
-        run: |
-          az login --username ${{ secrets.AZURE_CLIENT_ID }} --password ${{ secrets.AZURE_CLIENT_PWD }}
-          az vm start --name morecuda --resource-group morecuda_group
   build_and_test:
-    needs: start_vm
     timeout-minutes: 10
-    if: ${{ needs.start_vm.result == 'success' }}
     runs-on: self-hosted
     env:
       MLAGILITY_DEBUG: True
@@ -70,15 +56,3 @@ jobs:
           # E2E tests
           rm -rf ~/.cache/mlagility
           python test/gpu.py
-  stop_vm:
-    needs: build_and_test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y azure-cli
-      - name: Turn off Azure VM
-        run: |
-          az login --username ${{ secrets.AZURE_CLIENT_ID }} --password ${{ secrets.AZURE_CLIENT_PWD }}
-          az vm stop --name morecuda --resource-group morecuda_group
