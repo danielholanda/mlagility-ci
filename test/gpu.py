@@ -90,7 +90,9 @@ class Testing(unittest.TestCase):
         with patch.object(sys, "argv", flatten(testargs)):
             benchitcli()
 
-        assert_success_of_builds([test_script], check_perf=True, runtime="trt")
+        assert_success_of_builds(
+            [test_script], cache_dir, check_perf=True, runtime="trt"
+        )
 
 
 if __name__ == "__main__":

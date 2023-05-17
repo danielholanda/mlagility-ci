@@ -226,6 +226,7 @@ def flatten(lst: List[Union[str, List[str]]]) -> List[str]:
 
 def assert_success_of_builds(
     test_script_files: List[str],
+    cache_dir: str,
     info_property: Tuple[str, Any] = None,
     check_perf: bool = False,
     check_opset: int = None,
@@ -305,7 +306,7 @@ class Testing(unittest.TestCase):
         with patch.object(sys, "argv", testargs):
             benchitcli()
 
-        assert_success_of_builds([test_script])
+        assert_success_of_builds([test_script], cache_dir)
 
     def test_002_search_multiple(self):
         # Test the first model in the corpus
@@ -323,7 +324,7 @@ class Testing(unittest.TestCase):
         with patch.object(sys, "argv", testargs):
             benchitcli()
 
-        assert_success_of_builds([test_scripts[0], test_scripts[1]])
+        assert_success_of_builds([test_scripts[0], cache_dir, test_scripts[1]])
 
     def test_003_cli_build_dir(self):
         # NOTE: this is not a unit test, it relies on other command
@@ -343,7 +344,7 @@ class Testing(unittest.TestCase):
         with patch.object(sys, "argv", flatten(testargs)):
             benchitcli()
 
-        assert_success_of_builds(test_scripts)
+        assert_success_of_builds(test_scripts, cache_dir)
 
     def test_004_cli_report(self):
         # NOTE: this is not a unit test, it relies on other command
@@ -628,7 +629,7 @@ class Testing(unittest.TestCase):
         with patch.object(sys, "argv", testargs):
             benchitcli()
 
-        assert_success_of_builds([test_script])
+        assert_success_of_builds([test_script], cache_dir)
 
     def test_010_cli_sequence(self):
         # Test the first model in the corpus
@@ -648,7 +649,9 @@ class Testing(unittest.TestCase):
             benchitcli()
 
         assert_success_of_builds(
-            [test_script], ("all_build_stages", ["export_pytorch", "set_success"])
+            [test_script],
+            cache_dir,
+            ("all_build_stages", ["export_pytorch", "set_success"]),
         )
 
     def test_011_cli_benchmark(self):
@@ -665,7 +668,7 @@ class Testing(unittest.TestCase):
         with patch.object(sys, "argv", testargs):
             benchitcli()
 
-        assert_success_of_builds([test_script], None, check_perf=True)
+        assert_success_of_builds([test_script], cache_dir, None, check_perf=True)
 
     def test_012_cli_resume(self):
         # NOTE: this is not a unit test, it relies on other command
@@ -706,7 +709,7 @@ class Testing(unittest.TestCase):
 
         # All builds except for crash.py should have succeeded
         test_scripts = [x for x in test_scripts if x != "crash.py"]
-        assert_success_of_builds(test_scripts)
+        assert_success_of_builds(test_scripts, cache_dir)
 
     # TODO: Investigate why this test is non-deterministically failing
     @unittest.skip("Flaky test")
@@ -881,7 +884,7 @@ class Testing(unittest.TestCase):
             benchitcli()
 
         assert_success_of_builds(
-            [test_script], None, check_perf=True, check_opset=user_opset
+            [test_script], cache_dir, None, check_perf=True, check_opset=user_opset
         )
 
     def test_017_cli_process_isolation(self):
@@ -899,7 +902,7 @@ class Testing(unittest.TestCase):
         with patch.object(sys, "argv", testargs):
             benchitcli()
 
-        assert_success_of_builds([test_script], None, check_perf=True)
+        assert_success_of_builds([test_script], cache_dir, None, check_perf=True)
 
     def test_018_skip_compiled(self):
         test_script = "compiled.py"
@@ -913,7 +916,7 @@ class Testing(unittest.TestCase):
         with patch.object(sys, "argv", testargs):
             benchitcli()
 
-        builds_found = assert_success_of_builds([test_script])
+        builds_found = assert_success_of_builds([test_script], cache_dir)
 
         # Compile.py contains two Pytorch models.
         # One of those is compiled and should be skipped.
