@@ -271,8 +271,8 @@ def assert_success_of_builds(
                         assert (
                             False
                         ), f"Runtime {runtime} has not been implemented as part of this function"
-                assert model_perf.mean_latency > 0
-                assert model_perf.throughput > 0
+                    assert model_perf.mean_latency > 0
+                    assert model_perf.throughput > 0
 
                 if check_opset:
                     onnx_model = onnx.load(build_state.converted_onnx_file)
